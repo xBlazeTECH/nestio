@@ -1,20 +1,20 @@
-import { Controller, Get, MessageEvent, Render, Sse } from '@nestjs/common';
-import { interval, Observable } from 'rxjs';
+import { Controller, Get, Render } from '@nestjs/common';
 import { AppService } from './app.service';
-import { map } from 'rxjs/operators';
+import { CatsService } from './cats/cats.service';
 
 @Controller()
 export class AppController {
-  constructor(private readonly appService: AppService) {}
+  constructor(
+    private readonly appService: AppService,
+    private readonly catsService: CatsService,
+  ) {}
 
   @Get()
   @Render('index')
   getHello(): any {
-    return { message: this.appService.getHello() };
-  }
-
-  @Sse('sse')
-  sse(): Observable<MessageEvent> {
-    return interval(1000).pipe(map((_) => ({ data: { hello: 'world' } })));
+    return {
+      message: this.appService.getHello(),
+      cats: this.catsService.findAll(),
+    };
   }
 }
